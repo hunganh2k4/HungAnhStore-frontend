@@ -11,7 +11,6 @@ export default function Sidebar() {
     { icon: "♻️", name: "Thu cũ đổi mới" },
     { icon: "🏪", name: "Hàng cũ" },
     { icon: "🎉", name: "Khuyến mãi" },
-    { icon: "💡", name: "Tin công nghệ" },
   ];
 
   return (

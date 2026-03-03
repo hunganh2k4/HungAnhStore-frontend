@@ -1,7 +1,6 @@
 import Sidebar from "../components/Sidebar";
 import HeroBanner from "../components/HeroBanner";
 import RightPanel from "../components/RightPanel";
-import { useState } from "react";
 
 export default function Home() {
   const topProducts = [
@@ -9,25 +8,50 @@ export default function Home() {
       id: 1, 
       title: "GALAXY S26 ULTRA", 
       subtitle: "Đặt trước ưu đãi khủng", 
-      image: "https://via.placeholder.com/500x350?text=Samsung",
-      color: "from-blue-300 to-blue-200" 
+      image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/Home_Ver4(3).png",
     },
     { 
       id: 2, 
       title: "IPHONE 17 PRO MAX", 
       subtitle: "Trọn Tết, Vẹn Tính Hoa", 
-      image: "https://via.placeholder.com/500x350?text=iPhone",
-      color: "from-gray-300 to-gray-200" 
+      image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/phone-17-pro-max8-3.png",
+    },
+
+    { 
+      id: 3, 
+      title: "XIAOMI 15 PRO", 
+      subtitle: "Hiệu năng đỉnh cao, giá tốt", 
+      image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/Home_Ver4(3).png",
+    },
+
+    { 
+      id: 4, 
+      title: "MACBOOK AIR M4", 
+      subtitle: "Siêu mỏng nhẹ, pin cả ngày", 
+      image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/Home_Ver4(3).png",
+    },
+
+    { 
+      id: 5, 
+      title: "IPAD PRO 2026", 
+      subtitle: "Sáng tạo không giới hạn", 
+      image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/Home_Ver4(3).png",
+    },
+
+    { 
+      id: 6, 
+      title: "AIRPODS PRO 3", 
+      subtitle: "Chống ồn chủ động thế hệ mới", 
+      image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/Home_Ver4(3).png",
+    },
+
+    { 
+      id: 7, 
+      title: "ASUS ROG STRIX G18", 
+      subtitle: "Laptop gaming hiệu năng khủng", 
+      image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/Home_Ver4(3).png",
     },
   ];
-
-  const bottomProducts = [
-    { id: 1, name: "Galaxy A17 5G", price: "5.89", badge: "Học sinh - Sinh viên Giảm thêm 7% tối đa 700K" },
-    { id: 2, name: "Apple Watch SE3 | SE2", price: "4.99 Triệu", badge: "Giá chỉ từ" },
-    { id: 3, name: "Mua Laptop Online", price: "Giảm 5 đến thêm 5 Triệu + FREE SHIP", badge: "" },
-  ];
-
-  const [activeProduct, setActiveProduct] = useState(topProducts[0]);
 
   return (
     <main className="bg-gray-100 py-6">
@@ -35,63 +59,19 @@ export default function Home() {
 
         <div className="flex gap-4 py-4">
 
-          {/* ===== Sidebar ===== */}
           <div className="w-60 shrink-0">
             <Sidebar />
           </div>
 
-          {/* ===== CENTER CONTENT ===== */}
           <div className="flex-1 flex flex-col gap-4 pl-5">
-
-            {/* Top Products Tabs */}
-            <div className="grid grid-cols-2 gap-4">
-              {topProducts.map((product) => (
-                <div
-                  key={product.id}
-                  onClick={() => setActiveProduct(product)}
-                  className={`cursor-pointer rounded-lg p-4 text-center transition
-                    ${activeProduct.id === product.id
-                      ? "bg-red-100 border border-red-500"
-                      : "bg-white hover:bg-gray-100"}
-                  `}
-                >
-                  <div className="text-sm font-semibold">
-                    {product.title}
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    {product.subtitle}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Hero Banner */}
-            <HeroBanner product={activeProduct} />
-
+            {/* Chỉ còn 1 dòng */}
+            <HeroBanner products={topProducts} />
           </div>
 
-          {/* ===== Right Panel ===== */}
           <div className="w-72 shrink-0">
             <RightPanel />
           </div>
 
-        </div>
-
-        {/* ===== Bottom Products ===== */}
-        <div className="grid grid-cols-3 gap-4 pb-4">
-          {bottomProducts.map((product) => (
-            <div key={product.id} className="bg-white rounded-lg p-4 shadow">
-              <div className="font-semibold mb-2">{product.name}</div>
-              <div className="text-red-600 font-bold mb-2">
-                {product.price}
-              </div>
-              {product.badge && (
-                <div className="text-xs text-gray-600">
-                  {product.badge}
-                </div>
-              )}
-            </div>
-          ))}
         </div>
 
       </div>
