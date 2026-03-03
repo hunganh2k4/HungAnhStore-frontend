@@ -1,20 +1,20 @@
 import { Routes, Route } from "react-router-dom";
-import CategoryPage from "../features/product/pages/CategoryPage";
-import HomePage from "../features/home/pages/HomePage";
+import MainLayout from "../layouts/MainLayout";
+
+import Home from "../features/home/pages/HomePage";
+import AuthPage from "../features/auth/pages/AuthPage";
+import Category from "../features/product/pages/CategoryPage";
 
 export default function AppRoutes() {
   return (
     <Routes>
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/category/:category" element={<Category />} />
+      </Route>
 
-      {/* Home */}
-      <Route path="/" element={<HomePage/>} />
-
-      {/* Category */}
-      <Route path="/category/:category" element={<CategoryPage />} />
-
-      {/* 404 */}
-      {/* <Route path="*" element={<div>404 - Not Found</div>} /> */}
-
+      {/* Trang full screen */}
+      <Route path="/login" element={<AuthPage />} />
     </Routes>
   );
 }
