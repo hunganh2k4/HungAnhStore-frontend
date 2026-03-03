@@ -6,7 +6,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="w-full relative z-50">
+      <header className="w-full fixed top-0 left-0 z-50">
         {/* Top bar */}
         <div className="bg-pink-500 text-white text-sm py-1 text-center">
           ● Sale 8/3 sắp trở lại - Đăng ký ngay!

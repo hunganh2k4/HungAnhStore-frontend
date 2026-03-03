@@ -6,8 +6,10 @@ function App() {
 
   return (
     <>
-      <Header />\
-      <AppRoutes />
+      <Header />
+      <div className="pt-[80px]">
+        <AppRoutes />
+      </div>
     </>
   )
 }
