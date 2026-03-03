@@ -1,14 +1,13 @@
 import './App.css'
 import Header from './shared/components/Header'
-import Home from './features/home/pages/HomePage'
-import Footer from './shared/components/Footer'
+import AppRoutes from './routes/AppRoutes'
 
 function App() {
 
   return (
     <>
-      <Header />
-      <Home />
+      <Header />\
+      <AppRoutes />
     </>
   )
 }

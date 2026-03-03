@@ -65,7 +65,7 @@ export default function Header() {
       <div className="max-w-screen-2xl mx-auto px-4 py-4">
         <div
           className="w-60"
-          onClick={(e) => e.stopPropagation()} // click vào sidebar không tắt
+          onClick={(e) => e.stopPropagation()} 
         >
           <Sidebar />
         </div>
