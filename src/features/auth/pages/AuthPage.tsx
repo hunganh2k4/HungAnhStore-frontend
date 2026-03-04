@@ -1,28 +1,80 @@
 import { useState } from "react";
-import bgImage from "../../../assets/background-login.jpg"; 
+import bgImage from "../../../assets/background-login.jpg";
+import { useAuth } from "../auth.context";
+import { authService } from "../services/auth.service";
+import { useNavigate } from "react-router-dom";
 
 export default function AuthPage() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] =
+    useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (
+    e: React.FormEvent,
+  ) => {
+    e.preventDefault();
+    if (loading) return;
+
+    setError("");
+
+    if (!email || !password) {
+      setError("Vui lòng nhập đầy đủ thông tin");
+      return;
+    }
+
+    if (!isLogin && password !== confirmPassword) {
+      setError("Mật khẩu nhập lại không khớp");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      if (isLogin) {
+        await login(email, password);
+        navigate("/");
+      } else {
+        await authService.register({
+          email,
+          password,
+        });
+
+        // 👉 Chuyển sang trang thông báo xác thực
+        navigate("/verify-email-notice");
+      }
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message ||
+          "Có lỗi xảy ra",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div
       className="relative min-h-screen flex items-center justify-center bg-cover bg-center px-4"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
-      {/* Card */}
-      <div className="relative bg-white/95 w-full max-w-md rounded-3xl shadow-2xl p-8 transition-all duration-300">
+      <div className="relative bg-white/95 w-full max-w-md rounded-3xl shadow-2xl p-8">
 
-        {/* Header */}
-        <div className="flex justify-between mb-8 ">
+        <div className="flex justify-between mb-8">
           <button
             onClick={() => setIsLogin(true)}
             className={`flex-1 pb-3 font-semibold transition rounded-t-xl pt-4 ${
               isLogin
                 ? "border-b-2 border-red-600 text-red-600 bg-gray-200"
-                : "text-gray-400 hover:bg-gray-50"
+                : "text-gray-400"
             }`}
           >
             Đăng nhập
@@ -40,26 +92,33 @@ export default function AuthPage() {
           </button>
         </div>
 
-        {/* Form */}
-        <form className="space-y-4">
+        {error && (
+          <div className="mb-4 text-sm text-red-500 text-center">
+            {error}
+          </div>
+        )}
 
-          {!isLogin && (
-            <input
-              type="text"
-              placeholder="Họ và tên"
-              className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-400 outline-none"
-            />
-          )}
-
+        <form
+          className="space-y-4"
+          onSubmit={handleSubmit}
+        >
           <input
             type="email"
             placeholder="Email"
+            value={email}
+            onChange={(e) =>
+              setEmail(e.target.value)
+            }
             className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-400 outline-none"
           />
 
           <input
             type="password"
             placeholder="Mật khẩu"
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
             className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-400 outline-none"
           />
 
@@ -67,67 +126,28 @@ export default function AuthPage() {
             <input
               type="password"
               placeholder="Nhập lại mật khẩu"
+              value={confirmPassword}
+              onChange={(e) =>
+                setConfirmPassword(
+                  e.target.value,
+                )
+              }
               className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-400 outline-none"
             />
           )}
 
-          {isLogin && (
-            <div className="text-right text-sm text-red-500 hover:underline cursor-pointer">
-              Quên mật khẩu?
-            </div>
-          )}
-
           <button
             type="submit"
-            className="w-full bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition"
+            disabled={loading}
+            className="w-full bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition disabled:opacity-50"
           >
-            {isLogin ? "Đăng nhập" : "Tạo tài khoản"}
+            {loading
+              ? "Đang xử lý..."
+              : isLogin
+              ? "Đăng nhập"
+              : "Tạo tài khoản"}
           </button>
         </form>
-
-        {/* Divider */}
-        <div className="flex items-center my-6">
-          <div className="flex-1 h-px bg-gray-300" />
-          <span className="px-3 text-gray-400 text-sm">Hoặc</span>
-          <div className="flex-1 h-px bg-gray-300" />
-        </div>
-
-        {/* Social login */}
-        <div className="space-y-3">
-          <button className="w-full border py-2 rounded-xl hover:bg-gray-50 transition">
-            Đăng nhập với Google
-          </button>
-
-          <button className="w-full border py-2 rounded-xl hover:bg-gray-50 transition">
-            Đăng nhập với Facebook
-          </button>
-        </div>
-
-        {/* Switch bottom */}
-        <div className="text-center text-sm mt-6">
-          {isLogin ? (
-            <>
-              Chưa có tài khoản?{" "}
-              <span
-                onClick={() => setIsLogin(false)}
-                className="text-red-600 font-semibold cursor-pointer hover:underline"
-              >
-                Đăng ký ngay
-              </span>
-            </>
-          ) : (
-            <>
-              Đã có tài khoản?{" "}
-              <span
-                onClick={() => setIsLogin(true)}
-                className="text-red-600 font-semibold cursor-pointer hover:underline"
-              >
-                Đăng nhập
-              </span>
-            </>
-          )}
-        </div>
-
       </div>
     </div>
   );
