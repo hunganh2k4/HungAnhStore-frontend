@@ -6,6 +6,7 @@ import AuthPage from "../features/auth/pages/AuthPage";
 import Category from "../features/product/pages/CategoryPage";
 import VerifyEmailNotice from "../features/auth/pages/VerifyEmailNotice";
 import VerifyEmailPage from "../features/auth/pages/VerifyEmailPage";
+import ProductDetail from "../features/product/pages/ProductDetail";
 
 export default function AppRoutes() {
   return (
@@ -13,6 +14,8 @@ export default function AppRoutes() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/category/:category" element={<Category />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+      
       </Route>
 
       {/* Trang full screen */}
@@ -21,6 +24,7 @@ export default function AppRoutes() {
       <Route path="/verify-email" element={<VerifyEmailPage />} />
 
       <Route path="/verify-email-notice" element={<VerifyEmailNotice />}/>
+
       
     </Routes>
   );

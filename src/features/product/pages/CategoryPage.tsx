@@ -1,264 +1,400 @@
-import { useParams, Link } from "react-router-dom";
-import { useMemo, useState } from "react";
+import {
+  useParams,
+  Link,
+  useSearchParams,
+} from "react-router-dom";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
+import axios from "axios";
 
-type Product = {
+type ApiProduct = {
   id: number;
   name: string;
-  category: string;
-  brand: string;
-  price: number;
-  oldPrice: number;
-  image: string;
+  slug: string;
+  brand: {
+    id: number;
+    name: string;
+    slug: string;
+    logo?: string;
+  };
+  images: {
+    id: number;
+    imageUrl: string;
+    isMain: boolean;
+  }[];
+  products: {
+    id: number;
+    price: string;
+    stock?: number;
+  }[];
 };
 
 export default function CategoryPage() {
-  const { category } = useParams<{ category: string }>();
+  const { category } =
+    useParams<{ category: string }>();
+  const [searchParams, setSearchParams] =
+    useSearchParams();
 
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState("all");
-  const [sort, setSort] = useState("default");
+  const page = Number(
+    searchParams.get("page") || 1
+  );
+  const brandParam =
+    searchParams.get("brand") || "";
+  const search =
+    searchParams.get("search") || "";
+  const sort =
+    searchParams.get("sort") || "default";
 
-  // ================== DATA DEMO ==================
-  const products: Product[] = [
-    {
-      id: 1,
-      name: "iPhone 16 Pro Max",
-      category: "dien-thoai",
-      brand: "Apple",
-      price: 32990000,
-      oldPrice: 35990000,
-      image: "https://via.placeholder.com/300x300",
-    },
-    {
-      id: 2,
-      name: "Samsung Galaxy S25 Ultra",
-      category: "dien-thoai",
-      brand: "Samsung",
-      price: 28990000,
-      oldPrice: 31990000,
-      image: "https://via.placeholder.com/300x300",
-    },
-    {
-      id: 3,
-      name: "MacBook Air M4",
-      category: "laptop",
-      brand: "Apple",
-      price: 29990000,
-      oldPrice: 32990000,
-      image: "https://via.placeholder.com/300x300",
-    },
-    {
-      id: 4,
-      name: "ASUS ROG Strix G18",
-      category: "laptop",
-      brand: "Asus",
-      price: 45990000,
-      oldPrice: 48990000,
-      image: "https://via.placeholder.com/300x300",
-    },
-  ];
+  const [products, setProducts] =
+    useState<ApiProduct[]>([]);
+  const [lastPage, setLastPage] =
+    useState(1);
+  const [loading, setLoading] =
+    useState(false);
 
-  // ================== FILTER THEO CATEGORY ==================
-  const categoryProducts = useMemo(() => {
-    return products.filter((p) => p.category === category);
-  }, [category]);
+  const [searchInput, setSearchInput] =
+    useState(search);
 
-  // ================== DANH SÁCH BRAND ==================
-  const brands = useMemo(() => {
-    return [...new Set(categoryProducts.map((p) => p.brand))];
-  }, [categoryProducts]);
+  const debounceRef =
+    useRef<ReturnType<
+      typeof setTimeout
+    > | null>(null);
 
-  const toggleBrand = (brand: string) => {
-    setSelectedBrands((prev) =>
-      prev.includes(brand)
-        ? prev.filter((b) => b !== brand)
-        : [...prev, brand]
+  // ================= FETCH =================
+  useEffect(() => {
+    if (!category) return;
+
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+
+        const res = await axios.get(
+          "http://localhost:4000/product-lines",
+          {
+            params: {
+              page,
+              limit: 8,
+              category,
+              brand:
+                brandParam || undefined,
+              search:
+                search || undefined,
+              sort:
+                sort !== "default"
+                  ? sort
+                  : undefined,
+            },
+          }
+        );
+
+        setProducts(res.data.data);
+        setLastPage(res.data.lastPage);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [
+    category,
+    page,
+    brandParam,
+    search,
+    sort,
+  ]);
+
+  // ================= AUTO SEARCH =================
+  useEffect(() => {
+    if (debounceRef.current)
+      clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(
+      () => {
+        setSearchParams({
+          page: "1",
+          brand: brandParam,
+          search: searchInput,
+          sort,
+        });
+      },
+      500
     );
+
+    return () => {
+      if (debounceRef.current)
+        clearTimeout(debounceRef.current);
+    };
+  }, [searchInput]);
+
+  // ================= BRAND LIST =================
+  const brands = useMemo(() => {
+    return [
+      ...new Map(
+        products.map((p) => [
+          p.brand.id,
+          p.brand,
+        ])
+      ).values(),
+    ];
+  }, [products]);
+
+  const toggleBrand = (
+    brandSlug: string
+  ) => {
+    setSearchParams({
+      page: "1",
+      brand:
+        brandParam === brandSlug
+          ? ""
+          : brandSlug,
+      search: searchInput,
+      sort,
+    });
   };
 
-  // ================== FILTER LOGIC ==================
-  const filteredProducts = useMemo(() => {
-    let result = [...categoryProducts];
-
-    // Filter brand
-    if (selectedBrands.length > 0) {
-      result = result.filter((p) =>
-        selectedBrands.includes(p.brand)
-      );
-    }
-
-    // Filter price
-    if (priceRange === "under20") {
-      result = result.filter((p) => p.price < 20000000);
-    }
-    if (priceRange === "20to30") {
-      result = result.filter(
-        (p) => p.price >= 20000000 && p.price <= 30000000
-      );
-    }
-    if (priceRange === "over30") {
-      result = result.filter((p) => p.price > 30000000);
-    }
-
-    // Sort
-    if (sort === "priceAsc") {
-      result.sort((a, b) => a.price - b.price);
-    }
-    if (sort === "priceDesc") {
-      result.sort((a, b) => b.price - a.price);
-    }
-
-    return result;
-  }, [categoryProducts, selectedBrands, priceRange, sort]);
-
-  const formatTitle = (slug?: string) =>
-    slug?.replaceAll("-", " ") || "";
-
-  if (!categoryProducts.length) {
-    return (
-      <div className="p-10 text-center text-gray-500">
-        Không có sản phẩm cho danh mục này.
-      </div>
-    );
-  }
+  const changePage = (
+    newPage: number
+  ) => {
+    setSearchParams({
+      page: String(newPage),
+      brand: brandParam,
+      search: searchInput,
+      sort,
+    });
+  };
 
   return (
     <main className="bg-gray-100 min-h-screen py-8">
       <div className="max-w-screen-2xl mx-auto px-6">
 
-        {/* Breadcrumb */}
-        <div className="text-sm text-gray-500 mb-4">
-          <Link to="/" className="hover:underline">
+        {/* ===== BREADCRUMB ===== */}
+        <div className="mb-6 text-[15px] text-gray-500 flex flex-wrap items-center gap-2">
+          <Link
+            to="/"
+            className="hover:text-red-600 transition"
+          >
             Trang chủ
-          </Link>{" "}
-          /{" "}
-          <span className="capitalize font-semibold">
-            {formatTitle(category)}
+          </Link>
+
+          <span className="mx-2">/</span>
+
+          <span className="text-gray-900 font-medium">
+            {category
+              ?.replace(/-/g, " ")
+              .replace(
+                /\b\w/g,
+                (c) => c.toUpperCase()
+              )}
           </span>
         </div>
 
-        {/* Banner */}
-        <div className="bg-gradient-to-r from-red-600 to-pink-500 text-white rounded-3xl p-10 mb-8 shadow-xl">
-          <h1 className="text-4xl font-bold capitalize">
-            {formatTitle(category)}
-          </h1>
-          <p className="mt-2 opacity-90">
-            Sản phẩm chính hãng - Giá tốt nhất hôm nay
-          </p>
+        {/* BRAND FILTER */}
+        <div className="bg-white p-4 rounded-2xl shadow mb-6">
+          <h3 className="font-bold mb-4">
+            Hãng
+          </h3>
+
+          <div className="flex gap-4 flex-wrap">
+            {brands.map((brand) => (
+              <button
+                key={brand.id}
+                onClick={() =>
+                  toggleBrand(brand.slug)
+                }
+                className={`flex items-center justify-center px-4 py-2 rounded-xl border transition ${
+                  brandParam === brand.slug
+                    ? "border-red-600 ring-2 ring-red-200"
+                    : "border-gray-200 hover:border-red-400"
+                }`}
+              >
+                {/* Nếu có logo thì chỉ hiển thị logo */}
+                {brand.logo ? (
+                  <img
+                    src={brand.logo}
+                    alt={brand.name}
+                    className="w-20 h-12 object-contain"
+                  />
+                ) : (
+                  /* Nếu không có logo thì hiển thị tên */
+                  <span className="font-medium">
+                    {brand.name}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex gap-8">
-
-          {/* FILTER SIDEBAR */}
-          <div className="w-72 bg-white rounded-3xl shadow-lg p-6 space-y-8 h-fit">
-
-            {/* Brand */}
-            <div>
-              <h3 className="font-bold mb-4">Hãng</h3>
-              {brands.map((brand) => (
-                <label
-                  key={brand}
-                  className="flex items-center gap-2 mb-2 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedBrands.includes(brand)}
-                    onChange={() => toggleBrand(brand)}
-                  />
-                  {brand}
-                </label>
-              ))}
-            </div>
-
-            {/* Price */}
-            <div>
-              <h3 className="font-bold mb-4">Khoảng giá</h3>
-              <div className="space-y-2 text-sm">
-                <button onClick={() => setPriceRange("all")} className="block">
-                  Tất cả
-                </button>
-                <button onClick={() => setPriceRange("under20")} className="block">
-                  Dưới 20 triệu
-                </button>
-                <button onClick={() => setPriceRange("20to30")} className="block">
-                  20 - 30 triệu
-                </button>
-                <button onClick={() => setPriceRange("over30")} className="block">
-                  Trên 30 triệu
-                </button>
-              </div>
-            </div>
-
+        {/* SEARCH + SORT */}
+        <div className="bg-white p-4 rounded-2xl shadow mb-6 flex gap-4 items-center">
+          <div className="flex-1">
+            <input
+              value={searchInput}
+              onChange={(e) =>
+                setSearchInput(
+                  e.target.value
+                )
+              }
+              placeholder="Tìm sản phẩm..."
+              className="w-full border px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
           </div>
 
-          {/* PRODUCT AREA */}
-          <div className="flex-1">
+          <select
+            value={sort}
+            onChange={(e) =>
+              setSearchParams({
+                page: "1",
+                brand: brandParam,
+                search:
+                  searchInput,
+                sort:
+                  e.target.value,
+              })
+            }
+            className="border px-4 py-3 rounded-xl"
+          >
+            <option value="default">
+              Sắp xếp
+            </option>
+            <option value="price_asc">
+              Giá tăng dần
+            </option>
+            <option value="price_desc">
+              Giá giảm dần
+            </option>
+          </select>
+        </div>
 
-            {/* Sort bar */}
-            <div className="bg-white p-4 rounded-2xl shadow mb-6 flex justify-between">
-              <span>{filteredProducts.length} sản phẩm</span>
+        {/* PRODUCT GRID */}
+        {loading ? (
+          <div className="grid grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map(
+              (_, i) => (
+                <div
+                  key={i}
+                  className="h-64 bg-gray-200 animate-pulse rounded-2xl"
+                />
+              )
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-4 gap-6">
+            {products.map((product) => {
+              const image =
+                product.images?.find(
+                  (img) => img.isMain
+                )?.imageUrl || null;
 
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value)}
-                className="border px-3 py-2 rounded-lg"
-              >
-                <option value="default">Sắp xếp</option>
-                <option value="priceAsc">Giá tăng dần</option>
-                <option value="priceDesc">Giá giảm dần</option>
-              </select>
-            </div>
+              const hasVariant =
+                product.products &&
+                product.products.length >
+                  0;
 
-            {/* Grid */}
-            <div className="grid grid-cols-4 gap-6">
-              {filteredProducts.map((product) => (
+              const totalStock =
+                product.products?.reduce(
+                  (sum, p) =>
+                    sum +
+                    (p.stock || 0),
+                  0
+                ) || 0;
+
+              const isOutOfStock =
+                hasVariant &&
+                totalStock === 0;
+
+              const price =
+                hasVariant &&
+                !isOutOfStock
+                  ? Number(
+                      product
+                        .products[0]
+                        .price
+                    )
+                  : null;
+
+              return (
                 <div
                   key={product.id}
-                  className="bg-white rounded-3xl p-4 shadow hover:shadow-2xl transition group"
+                  className="bg-white rounded-3xl p-4 shadow hover:shadow-2xl transition"
                 >
-                  <div className="relative">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="h-48 w-full object-contain group-hover:scale-105 transition"
-                    />
-                    <span className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded-lg">
-                      -
-                      {Math.round(
-                        ((product.oldPrice - product.price) /
-                          product.oldPrice) *
-                          100
-                      )}
-                      %
-                    </span>
+                  <div className="h-48 w-full flex items-center justify-center bg-gray-100 rounded-xl">
+                    {image ? (
+                      <img
+                        src={image}
+                        alt={
+                          product.name
+                        }
+                        className="h-48 w-full object-contain"
+                      />
+                    ) : (
+                      <span className="text-gray-400 text-sm">
+                        Chưa có ảnh
+                      </span>
+                    )}
                   </div>
 
                   <h3 className="mt-4 font-semibold text-sm">
                     {product.name}
                   </h3>
 
-                  <div className="mt-2">
-                    <span className="text-red-600 font-bold">
-                      {product.price.toLocaleString()}đ
-                    </span>
-                    <span className="ml-2 text-gray-400 line-through text-sm">
-                      {product.oldPrice.toLocaleString()}đ
-                    </span>
+                  <div className="mt-2 font-bold">
+                    {!hasVariant ? (
+                      <span className="text-gray-400">
+                        Chưa có sản phẩm
+                      </span>
+                    ) : isOutOfStock ? (
+                      <span className="text-gray-400">
+                        Hết hàng
+                      </span>
+                    ) : (
+                      <span className="text-red-600">
+                        {price!.toLocaleString()}
+                        đ
+                      </span>
+                    )}
                   </div>
 
                   <Link
-                    to={`/product/${product.id}`}
+                    to={`/product/${product.slug}`}
                     className="block mt-4 w-full bg-red-600 text-white py-2 rounded-xl text-center hover:bg-red-700 transition"
                   >
                     Xem chi tiết
                   </Link>
                 </div>
-              ))}
-            </div>
-
+              );
+            })}
           </div>
+        )}
 
-        </div>
+        {/* PAGINATION */}
+        {lastPage > 1 && (
+          <div className="flex justify-center gap-2 mt-10">
+            {Array.from({
+              length: lastPage,
+            }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() =>
+                  changePage(i + 1)
+                }
+                className={`px-4 py-2 rounded-lg ${
+                  page === i + 1
+                    ? "bg-red-600 text-white"
+                    : "bg-white"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );
