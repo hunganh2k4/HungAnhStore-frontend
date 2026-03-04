@@ -11,6 +11,7 @@ interface Brand {
   logo?: string
 }
 
+
 interface Variant {
   id: number
   sku: string
@@ -18,6 +19,13 @@ interface Variant {
   price: string
   imageUrl: string
   stock: number
+}
+
+
+interface ProductAttribute {
+  id: number
+  name: string
+  value: string
 }
 
 interface ProductLine {
@@ -33,6 +41,7 @@ interface ProductLine {
     name: string
     slug: string
   }
+  attributes?: ProductAttribute[]
 }
 
 /* ================= COMPONENT ================= */
@@ -265,6 +274,34 @@ export default function ProductDetail() {
         </div>
       </div>
     </div>
+
+    {/* ================= TECHNICAL SPECIFICATIONS ================= */}
+    {product.attributes && product.attributes.length > 0 && (
+      <div className="max-w-screen-2xl mx-auto px-6 py-8">
+        <h3 className="text-2xl font-bold mb-6">
+          Thông số kỹ thuật
+        </h3>
+
+        <div className="rounded-2xl shadow overflow-hidden border">
+          {product.attributes.map((attr) => (
+            <div
+              key={attr.id}
+              className="grid grid-cols-3"
+            >
+              {/* Tên thông số - nền xám */}
+              <div className="col-span-1 bg-gray-100 px-6 py-4 text-gray-700 font-medium border-b border-r">
+                {attr.name}
+              </div>
+
+              {/* Giá trị - nền trắng */}
+              <div className="col-span-2 bg-white px-6 py-4 text-gray-900 border-b">
+                {attr.value}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
     </>
   )
 }
