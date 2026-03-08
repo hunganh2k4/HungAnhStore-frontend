@@ -16,6 +16,7 @@ class AuthService {
   async register(payload: {
     email: string;
     password: string;
+    name: string;
   }) {
     const { data } = await publicApi.post(
       "/auth/register",
