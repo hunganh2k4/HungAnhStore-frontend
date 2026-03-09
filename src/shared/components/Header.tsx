@@ -2,6 +2,7 @@ import { useState } from "react";
 import Sidebar from "../../features/home/components/Sidebar";
 import { useAuth } from "../../features/auth/auth.context"; 
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 export default function Header() {
@@ -48,7 +49,13 @@ export default function Header() {
 
             {/* Giỏ hàng + User */}
             <div className="flex items-center gap-4">
-              <div>🛒 Giỏ hàng</div>
+              <Link
+                to="/cart"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 transition"
+              >
+                🛒
+                <span>Giỏ hàng</span>
+              </Link>
 
               {isAuthenticated && user ? (
                 // Hiển thị tên user + nút logout

@@ -7,6 +7,8 @@ import Category from "../features/product/pages/CategoryPage";
 import VerifyEmailNotice from "../features/auth/pages/VerifyEmailNotice";
 import VerifyEmailPage from "../features/auth/pages/VerifyEmailPage";
 import ProductDetail from "../features/product/pages/ProductDetail";
+import CartPage from "../features/cart/pages/CartPage";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 export default function AppRoutes() {
   return (
@@ -15,6 +17,14 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/category/:category" element={<Category />} />
         <Route path="/product/:slug" element={<ProductDetail />} />
+        <Route
+          path="/cart"
+          element={
+            <ProtectedRoute>
+              <CartPage />
+            </ProtectedRoute>
+          }
+        />
       
       </Route>
 

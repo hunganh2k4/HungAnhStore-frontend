@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Link } from "react-router-dom"
+import { tokenStore } from "../../../shared/api/token.store"
 
 /* ================= TYPES ================= */
 
@@ -115,6 +116,39 @@ export default function ProductDetail() {
         Không tìm thấy sản phẩm
       </div>
     )
+  }
+
+
+  const handleAddToCart = async () => {
+    if (!selectedVariant || !product) return
+
+    try {
+      const token = tokenStore.get()
+
+      const body = {
+        productId: selectedVariant.id,
+        quantity: 1,
+        priceSnapshot: Number(selectedVariant.price),
+        productNameSnapshot: `${product.name} - ${selectedVariant.color}`,
+        imageSnapshot: selectedVariant.imageUrl || selectedImage,
+      }
+
+      const res = await fetch("http://localhost:4000/cart/items", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      })
+
+      if (!res.ok) throw new Error("Add cart failed")
+
+      alert("Đã thêm vào giỏ hàng")
+    } catch (error) {
+      console.error(error)
+      alert("Thêm giỏ hàng thất bại")
+    }
   }
 
   /* ================= RENDER ================= */
@@ -255,7 +289,10 @@ export default function ProductDetail() {
               Mua ngay
             </button>
 
-            <button className="flex-1 border border-red-600 text-red-600 py-4 rounded-2xl font-semibold hover:bg-red-50 transition">
+            <button 
+              onClick={handleAddToCart}
+              className="flex-1 border border-red-600 text-red-600 py-4 rounded-2xl font-semibold hover:bg-red-50 transition"
+            >
               Thêm vào giỏ
             </button>
           </div>
