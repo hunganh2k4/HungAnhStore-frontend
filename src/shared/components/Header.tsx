@@ -1,8 +1,13 @@
 import { useState } from "react";
 import Sidebar from "../../features/home/components/Sidebar";
+import { useAuth } from "../../features/auth/auth.context"; 
+import { useNavigate } from "react-router-dom";
+
 
 export default function Header() {
   const [openMenu, setOpenMenu] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth(); 
+  const navigate = useNavigate();
 
   return (
     <>
@@ -27,11 +32,12 @@ export default function Header() {
               ☰ Danh mục
             </button>
 
-            {/* Giữ nguyên toàn bộ phần còn lại của bạn */}
+            {/* Vị trí */}
             <button className="bg-white/15 px-4 py-2 rounded-xl hover:bg-white/25 transition">
               📍 Hồ Chí Minh
             </button>
 
+            {/* Search bar */}
             <div className="flex-1">
               <input
                 type="text"
@@ -40,39 +46,55 @@ export default function Header() {
               />
             </div>
 
+            {/* Giỏ hàng + User */}
             <div className="flex items-center gap-4">
               <div>🛒 Giỏ hàng</div>
-              <button className="bg-white/15 px-4 py-2 rounded-xl">
-                👤 Đăng nhập
-              </button>
+
+              {isAuthenticated && user ? (
+                // Hiển thị tên user + nút logout
+                <div className="flex items-center gap-2 bg-white/15 px-4 py-2 rounded-xl">
+                  👤 {user.name}
+                  <button
+                    onClick={logout}
+                    className="ml-2 px-2 py-1 bg-red-600 text-white rounded-xl text-sm hover:bg-red-700 transition"
+                  >
+                    Đăng xuất
+                  </button>
+                </div>
+              ) : (
+                // Nếu chưa login
+                <button onClick={() => navigate("/login")}  className="bg-white/15 px-4 py-2 rounded-xl hover:bg-white/25 transition">
+                  👤 Đăng nhập
+                </button>
+              )}
             </div>
 
           </div>
         </div>
       </header>
 
-      {/* Sidebar nằm dưới header */}
+      {/* Sidebar */}
       {openMenu && (
-  <div
-    className="fixed inset-0 z-40"
-    onClick={() => setOpenMenu(false)} // click ngoài sẽ tắt
-  >
-    {/* Overlay */}
-    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-
-    {/* Sidebar */}
-    <div className="absolute top-[96px] left-0 w-full z-50">
-      <div className="max-w-screen-2xl mx-auto px-4 py-4">
         <div
-          className="w-60"
-          onClick={(e) => e.stopPropagation()} 
+          className="fixed inset-0 z-40"
+          onClick={() => setOpenMenu(false)}
         >
-          <Sidebar />
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+
+          {/* Sidebar */}
+          <div className="absolute top-[96px] left-0 w-full z-50">
+            <div className="max-w-screen-2xl mx-auto px-4 py-4">
+              <div
+                className="w-60"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Sidebar />
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
+      )}
     </>
   );
 }

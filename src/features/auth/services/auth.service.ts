@@ -47,7 +47,7 @@ class AuthService {
   }
 
   async getProfile() {
-    const { data } = await privateApi.get('/users/me');
+    const { data } = await privateApi.get('/auth/me');
     return data;
   }
 

@@ -5,13 +5,24 @@ import {
   useState,
 } from "react";
 import { authService } from "../auth/services/auth.service";
+import { tokenStore } from "../../shared/api/token.store";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+}
 
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
+  user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
+
+
 
 const AuthContext = createContext<AuthContextType>(
   {} as AuthContextType
@@ -25,12 +36,20 @@ export const AuthProvider = ({
   const [isAuthenticated, setIsAuthenticated] =
     useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
 
   // 🔥 Auto refresh khi F5
   useEffect(() => {
     const initAuth = async () => {
       try {
-        await authService.refresh();
+        const { accessToken } = await authService.refresh();
+        tokenStore.set(accessToken);
+        console.log("Access token refreshed:", accessToken);
+
+        const userData = await authService.getProfile();
+        console.log("Fetched user data:", userData);
+        setUser(userData);
+
         setIsAuthenticated(true);
       } catch {
         setIsAuthenticated(false);
@@ -48,6 +67,8 @@ export const AuthProvider = ({
   ) => {
     await authService.login({ email, password });
     setIsAuthenticated(true);
+    const userData = await authService.getProfile();
+    setUser(userData);
   };
 
   const logout = async () => {
@@ -61,6 +82,7 @@ export const AuthProvider = ({
   return (
     <AuthContext.Provider
       value={{
+        user,
         isAuthenticated,
         isLoading,
         login,
