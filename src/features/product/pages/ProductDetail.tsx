@@ -47,7 +47,7 @@ interface ProductLine {
 /* ================= COMPONENT ================= */
 
 export default function ProductDetail() {
-  const { id } = useParams()
+  const { slug } = useParams()
 
   const [product, setProduct] = useState<ProductLine | null>(null)
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null)
@@ -57,11 +57,11 @@ export default function ProductDetail() {
   /* ================= FETCH DATA ================= */
 
   useEffect(() => {
-    if (!id) return
+    if (!slug) return
 
     setLoading(true)
 
-    fetch(`http://localhost:4000/product-lines/${id}`)
+    fetch(`http://localhost:4000/product-lines/slug/${slug}`)
       .then(res => res.json())
       .then((data: ProductLine) => {
         setProduct(data)
@@ -75,7 +75,7 @@ export default function ProductDetail() {
 
         setLoading(false)
       })
-  }, [id])
+  }, [slug])
 
   /* ================= GỘP ẢNH ================= */
 
