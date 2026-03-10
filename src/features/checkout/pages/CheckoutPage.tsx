@@ -6,6 +6,8 @@ const MapPickerModal = lazy(
   () => import("../components/MapPickerModal")
 )
 
+type PaymentMethod = "ONLINE" | "COD"
+
 interface CartItem {
   id: number
   productId: number
@@ -28,6 +30,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [showMap, setShowMap] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("COD")
   const [form, setForm] = useState<CheckoutForm>({
     fullName: "",
     phone: "",
@@ -56,9 +59,9 @@ export default function CheckoutPage() {
 
   const handleChange =
     (field: keyof CheckoutForm) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setForm((prev) => ({ ...prev, [field]: e.target.value }))
-    }
+      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setForm((prev) => ({ ...prev, [field]: e.target.value }))
+      }
 
   const handleMapConfirm = (address: string) => {
     setForm((prev) => ({ ...prev, address }))
@@ -74,13 +77,39 @@ export default function CheckoutPage() {
 
     setSubmitting(true)
     try {
-      // TODO: gọi API tạo đơn hàng thật sự khi backend sẵn sàng
-      console.log("Checkout info:", form, cartItems)
-      alert("Đặt hàng thành công (demo).")
-      navigate("/")
+      const payload = {
+        paymentMethod,
+        items: cartItems.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.priceSnapshot,
+        })),
+      }
+
+      const { data: orderResponse } = await privateApi.post("/orders", payload)
+
+      if (paymentMethod === "ONLINE") {
+        try {
+          const { data: paymentResponse } = await privateApi.get(`/payment/${orderResponse.id}/url`)
+          alert(paymentResponse);
+          if (paymentResponse.success && paymentResponse.url) {
+            window.location.href = paymentResponse.url
+            return
+          } else {
+            alert("Lỗi khi tạo link thanh toán.")
+            navigate("/")
+          }
+        } catch (paymentError) {
+          console.error("Lỗi thanh toán:", paymentError)
+          alert("Lỗi khi tạo link thanh toán. Vui lòng thử lại sau.")
+        }
+      } else {
+        alert("Đặt hàng thành công!")
+        navigate("/")
+      }
     } catch (error) {
       console.error(error)
-      alert("Đặt hàng thất bại.")
+      alert("Đặt hàng thất bại. Vui lòng thử lại.")
     } finally {
       setSubmitting(false)
     }
@@ -118,10 +147,7 @@ export default function CheckoutPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Form thông tin */}
-            <form
-              onSubmit={handleSubmit}
-              className="lg:col-span-2 space-y-4"
-            >
+            <form onSubmit={handleSubmit} className="lg:col-span-2 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Họ và tên
@@ -135,19 +161,17 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Số điện thoại người nhận
-                  </label>
-                  <input
-                    type="tel"
-                    className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                    value={form.phone}
-                    onChange={handleChange("phone")}
-                    placeholder="Ví dụ: 09xxxxxxxx"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Số điện thoại người nhận
+                </label>
+                <input
+                  type="tel"
+                  className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  value={form.phone}
+                  onChange={handleChange("phone")}
+                  placeholder="Ví dụ: 09xxxxxxxx"
+                />
               </div>
 
               {/* Địa chỉ + nút bản đồ */}
@@ -187,20 +211,84 @@ export default function CheckoutPage() {
                 />
               </div>
 
+              {/* Phương thức thanh toán */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Phương thức thanh toán
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {/* COD */}
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("COD")}
+                    className={`flex flex-col items-center gap-2 rounded-xl border-2 px-4 py-4 transition-all ${paymentMethod === "COD"
+                      ? "border-red-500 bg-red-50 text-red-700"
+                      : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                      }`}
+                  >
+                    <span className="text-2xl">💵</span>
+                    <div className="text-center">
+                      <div className="font-semibold text-sm">Tiền mặt</div>
+                      <div className="text-xs opacity-70">
+                        Thanh toán khi nhận hàng (COD)
+                      </div>
+                    </div>
+                    {paymentMethod === "COD" && (
+                      <span className="text-xs font-bold text-red-600 bg-red-100 rounded-full px-2 py-0.5">
+                        Đã chọn ✓
+                      </span>
+                    )}
+                  </button>
+
+                  {/* ONLINE */}
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("ONLINE")}
+                    className={`flex flex-col items-center gap-2 rounded-xl border-2 px-4 py-4 transition-all ${paymentMethod === "ONLINE"
+                      ? "border-red-500 bg-red-50 text-red-700"
+                      : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                      }`}
+                  >
+                    <span className="text-2xl">💳</span>
+                    <div className="text-center">
+                      <div className="font-semibold text-sm">Thanh toán Online</div>
+                      <div className="text-xs opacity-70">
+                        Chuyển khoản / Ví điện tử
+                      </div>
+                    </div>
+                    {paymentMethod === "ONLINE" && (
+                      <span className="text-xs font-bold text-red-600 bg-red-100 rounded-full px-2 py-0.5">
+                        Đã chọn ✓
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </div>
+
               <button
                 type="submit"
                 disabled={submitting}
-                className="mt-2 inline-flex items-center justify-center rounded-xl bg-red-600 px-6 py-3 text-sm sm:text-base font-semibold text-white hover:bg-red-700 transition disabled:opacity-50"
+                className="mt-2 w-full inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-6 py-3 text-sm sm:text-base font-semibold text-white hover:bg-red-700 transition disabled:opacity-50"
               >
-                {submitting ? "Đang xử lý..." : "Xác nhận đặt hàng"}
+                {submitting ? (
+                  <>
+                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Đang xử lý...
+                  </>
+                ) : (
+                  <>
+                    Xác nhận đặt hàng
+                    <span className="text-xs font-normal opacity-80">
+                      ({paymentMethod === "COD" ? "Tiền mặt" : "Online"})
+                    </span>
+                  </>
+                )}
               </button>
             </form>
 
             {/* Tóm tắt đơn hàng */}
             <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4 space-y-3">
-              <div className="font-semibold text-gray-900">
-                Tóm tắt đơn hàng
-              </div>
+              <div className="font-semibold text-gray-900">Tóm tắt đơn hàng</div>
 
               <div className="max-h-64 overflow-y-auto space-y-2 text-sm">
                 {cartItems.map((item) => (
@@ -212,9 +300,7 @@ export default function CheckoutPage() {
                       <div className="line-clamp-2 text-gray-800">
                         {item.productNameSnapshot}
                       </div>
-                      <div className="text-gray-500">
-                        SL: {item.quantity}
-                      </div>
+                      <div className="text-gray-500">SL: {item.quantity}</div>
                     </div>
                     <div className="font-semibold text-gray-900">
                       {(item.priceSnapshot * item.quantity).toLocaleString()}đ
@@ -223,13 +309,19 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
-              <div className="border-t pt-3 flex items-center justify-between text-sm">
-                <span className="text-gray-600">
-                  Tổng thanh toán
-                </span>
-                <span className="text-lg font-bold text-red-600">
-                  {total.toLocaleString()}đ
-                </span>
+              <div className="border-t pt-3 space-y-2 text-sm">
+                <div className="flex items-center justify-between text-gray-500">
+                  <span>Phương thức</span>
+                  <span className="font-medium text-gray-700">
+                    {paymentMethod === "COD" ? "💵 Tiền mặt" : "💳 Online"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Tổng thanh toán</span>
+                  <span className="text-lg font-bold text-red-600">
+                    {total.toLocaleString()}đ
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -249,5 +341,3 @@ export default function CheckoutPage() {
     </div>
   )
 }
-
-

@@ -10,6 +10,7 @@ import ProductDetail from "../features/product/pages/ProductDetail";
 import CartPage from "../features/cart/pages/CartPage";
 import CheckoutPage from "../features/checkout/pages/CheckoutPage";
 import { ProtectedRoute } from "./ProtectedRoute";
+import PaymentResult from "../features/checkout/pages/PaymentResult";
 
 export default function AppRoutes() {
   return (
@@ -34,7 +35,7 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
-      
+
       </Route>
 
       {/* Trang full screen */}
@@ -42,9 +43,11 @@ export default function AppRoutes() {
 
       <Route path="/verify-email" element={<VerifyEmailPage />} />
 
-      <Route path="/verify-email-notice" element={<VerifyEmailNotice />}/>
+      <Route path="/verify-email-notice" element={<VerifyEmailNotice />} />
 
-      
+      <Route path="/payment/result" element={<PaymentResult />} />
+
+
     </Routes>
   );
 }
