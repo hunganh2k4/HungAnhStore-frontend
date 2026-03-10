@@ -8,6 +8,7 @@ import VerifyEmailNotice from "../features/auth/pages/VerifyEmailNotice";
 import VerifyEmailPage from "../features/auth/pages/VerifyEmailPage";
 import ProductDetail from "../features/product/pages/ProductDetail";
 import CartPage from "../features/cart/pages/CartPage";
+import CheckoutPage from "../features/checkout/pages/CheckoutPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 
 export default function AppRoutes() {
@@ -22,6 +23,14 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <CartPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <CheckoutPage />
             </ProtectedRoute>
           }
         />
