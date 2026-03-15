@@ -41,6 +41,7 @@ interface ProductLine {
   name: string
   slug: string
   description?: string
+  contentHtml?: string
   videoReviewUrl?: string
   brand: Brand
   images?: ProductImage[]
@@ -62,6 +63,7 @@ export default function ProductDetail() {
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null)
   const [selectedImage, setSelectedImage] = useState<string>("")
   const [loading, setLoading] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(false)
   const { refreshCart } = useCart()
 
   const getYouTubeEmbedUrl = (url: string) => {
@@ -392,9 +394,8 @@ export default function ProductDetail() {
                 </div>
               </div>
             )}
-
             {/* ACTION BUTTONS */}
-            <div className="flex gap-4">
+            <div className="flex gap-4 mt-8">
               {selectedVariant && selectedVariant.stock > 0 ? (
                 <>
                   <button className="flex-1 bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl text-lg font-semibold transition">
@@ -418,13 +419,13 @@ export default function ProductDetail() {
               )}
             </div>
 
-            {/* DESCRIPTION */}
-            {product.description && (
-              <div className="mt-10">
-                <h3 className="text-xl font-semibold mb-3">
-                  Mô tả sản phẩm
+            {/* SHORT DESCRIPTION - RESTORED */}
+            {product && product.description && (
+              <div className="mt-8 pt-8 border-t border-gray-100 text-left">
+                <h3 className="text-lg font-bold mb-3 text-gray-800">
+                  Mô tả ngắn
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed italic">
                   {product.description}
                 </p>
               </div>
@@ -433,33 +434,84 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* ================= TECHNICAL SPECIFICATIONS ================= */}
-      {product.attributes && product.attributes.length > 0 && (
-        <div className="max-w-screen-2xl mx-auto px-6 py-8">
-          <h3 className="text-2xl font-bold mb-6">
-            Thông số kỹ thuật
-          </h3>
+      {/* ================= BOTTOM SECTION: SPECS & CONTENT ================= */}
+      <div className="max-w-screen-2xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start text-left">
 
-          <div className="rounded-2xl shadow overflow-hidden border">
-            {product.attributes.map((attr) => (
-              <div
-                key={attr.id}
-                className="grid grid-cols-3"
-              >
-                {/* Tên thông số - nền xám */}
-                <div className="col-span-1 bg-gray-100 px-6 py-4 text-gray-700 font-medium border-b border-r">
-                  {attr.name}
+          {/* LEFT: TECHNICAL SPECIFICATIONS */}
+          <div className="lg:col-span-1 bg-white rounded-3xl p-8 border border-gray-100 shadow-sm sticky top-24">
+            <h3 className="text-2xl font-bold mb-6 text-gray-800">
+              Thông số kỹ thuật
+            </h3>
+            {product.attributes && product.attributes.length > 0 ? (
+              <div className="rounded-2xl overflow-hidden border border-gray-50">
+                {product.attributes.map((attr) => (
+                  <div key={attr.id} className="grid grid-cols-2 border-b border-gray-50 last:border-0">
+                    <div className="bg-gray-50/50 px-4 py-3 text-gray-600 font-medium text-sm">
+                      {attr.name}
+                    </div>
+                    <div className="bg-white px-4 py-3 text-gray-900 text-sm">
+                      {attr.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-400 italic">Đang cập nhật thông số...</p>
+            )}
+          </div>
+
+          {/* RIGHT: DETAILED CONTENT (HTML) */}
+          <div className="lg:col-span-2 text-left">
+            {(product.contentHtml || product.description) && (
+              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
+                <div
+                  className={`p-10 transition-all duration-500 ease-in-out ${!isExpanded ? "max-h-[650px] overflow-hidden" : "max-h-full pb-32"
+                    }`}
+                >
+                  <h3 className="text-2xl font-bold mb-8 text-gray-800 border-b border-gray-50 pb-4">
+                    {product.contentHtml ? "Đặc điểm nổi bật" : "Mô tả sản phẩm"}
+                  </h3>
+
+                  {product.contentHtml ? (
+                    <div
+                      className="prose prose-lg max-w-none text-gray-700
+                        prose-headings:text-gray-900 prose-headings:font-bold prose-headings:mb-4
+                        prose-img:rounded-3xl prose-img:shadow-xl prose-img:mx-auto prose-img:my-8
+                        prose-p:leading-relaxed prose-p:mb-6"
+                      dangerouslySetInnerHTML={{ __html: product.contentHtml }}
+                    />
+                  ) : (
+                    <p className="text-gray-700 leading-relaxed text-lg">
+                      {product.description}
+                    </p>
+                  )}
                 </div>
 
-                {/* Giá trị - nền trắng */}
-                <div className="col-span-2 bg-white px-6 py-4 text-gray-900 border-b">
-                  {attr.value}
+                {/* Gradient & Toggle Button */}
+                <div className={`absolute bottom-0 left-0 right-0 flex justify-center items-end pb-8 transition-all ${!isExpanded ? "pt-40 bg-gradient-to-t from-white via-white/95 to-transparent" : "pt-10"
+                  }`}>
+                  <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="bg-white border-2 border-blue-600 text-black-600 px-10 py-3 rounded-full font-bold hover:bg-blue-50 transition-all shadow-lg hover:shadow-blue-100 flex items-center gap-2 group"
+                  >
+                    {isExpanded ? (
+                      <>
+                        Thu gọn <span className="text-xl group-hover:-translate-y-1 transition-transform">↑</span>
+                      </>
+                    ) : (
+                      <>
+                        Xem thêm nội dung <span className="text-xl group-hover:translate-y-1 transition-transform">↓</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
-            ))}
+            )}
           </div>
+
         </div>
-      )}
+      </div>
     </>
   )
 }
