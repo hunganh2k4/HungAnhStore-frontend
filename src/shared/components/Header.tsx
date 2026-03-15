@@ -1,13 +1,15 @@
 import { useState } from "react";
 import Sidebar from "../../features/home/components/Sidebar";
-import { useAuth } from "../../features/auth/auth.context"; 
+import { useAuth } from "../../features/auth/auth.context";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useCart } from "../../features/cart/cart.context";
 
 
 export default function Header() {
   const [openMenu, setOpenMenu] = useState(false);
-  const { isAuthenticated, user, logout } = useAuth(); 
+  const { isAuthenticated, user, logout } = useAuth();
+  const { cartCount } = useCart();
   const navigate = useNavigate();
 
   return (
@@ -51,9 +53,16 @@ export default function Header() {
             <div className="flex items-center gap-4">
               <Link
                 to="/cart"
-                className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 transition"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-black/20 transition relative"
               >
-                🛒
+                <div className="relative">
+                  🛒
+                  {cartCount > 0 && (
+                    <span className="absolute -top-3 -right-3 bg-orange-500 text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center border-2 border-red-600">
+                      {cartCount}
+                    </span>
+                  )}
+                </div>
                 <span>Giỏ hàng</span>
               </Link>
 
@@ -70,7 +79,7 @@ export default function Header() {
                 </div>
               ) : (
                 // Nếu chưa login
-                <button onClick={() => navigate("/login")}  className="bg-white/15 px-4 py-2 rounded-xl hover:bg-white/25 transition">
+                <button onClick={() => navigate("/login")} className="bg-white/15 px-4 py-2 rounded-xl hover:bg-white/25 transition">
                   👤 Đăng nhập
                 </button>
               )}

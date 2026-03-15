@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Link } from "react-router-dom"
 import { tokenStore } from "../../../shared/api/token.store"
+import { useCart } from "../../cart/cart.context"
 
 /* ================= TYPES ================= */
 
@@ -60,6 +61,7 @@ export default function ProductDetail() {
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null)
   const [selectedImage, setSelectedImage] = useState<string>("")
   const [loading, setLoading] = useState(true)
+  const { refreshCart } = useCart()
 
   /* ================= FETCH DATA ================= */
 
@@ -150,6 +152,7 @@ export default function ProductDetail() {
 
       if (!res.ok) throw new Error("Add cart failed")
 
+      await refreshCart()
       alert("Đã thêm vào giỏ hàng")
     } catch (error) {
       console.error(error)

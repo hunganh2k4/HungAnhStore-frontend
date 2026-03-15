@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { privateApi } from "../../../shared/api/http"
+import { useCart } from "../cart.context"
 
 interface CartItem {
   id: number
@@ -14,6 +15,7 @@ interface CartItem {
 export default function CartPage() {
   const navigate = useNavigate()
   const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const { refreshCart } = useCart()
   const [loading, setLoading] = useState(true)
   const [mutatingItemIds, setMutatingItemIds] = useState<
     Record<number, boolean>
@@ -76,6 +78,7 @@ export default function CartPage() {
     try {
       await privateApi.delete(`/cart/items/${itemId}`)
       await fetchCart()
+      refreshCart()
     } catch (error) {
       console.error(error)
       alert("Xóa sản phẩm khỏi giỏ hàng thất bại")
@@ -99,6 +102,7 @@ export default function CartPage() {
     try {
       await Promise.all(ids.map((id) => privateApi.delete(`/cart/items/${id}`)))
       await fetchCart()
+      refreshCart()
     } catch (error) {
       console.error(error)
       alert("Xóa sản phẩm đã chọn thất bại")
@@ -129,6 +133,7 @@ export default function CartPage() {
         imageSnapshot: item.imageSnapshot,
       })
       await fetchCart()
+      refreshCart()
     } catch (error) {
       console.error(error)
       alert("Cập nhật số lượng thất bại")
@@ -156,14 +161,14 @@ export default function CartPage() {
           <div className="px-4 sm:px-6 py-5">
             {/* HEADER */}
             <div className="flex items-center justify-center relative mb-5">
-            <button
-              type="button"
-              className="absolute left-0 w-14 h-14 rounded-2xl hover:bg-gray-100 text-3xl flex items-center justify-center"
-              onClick={() => navigate(-1)}
-              aria-label="Quay lại"
-            >
-              ❮
-            </button>
+              <button
+                type="button"
+                className="absolute left-0 w-14 h-14 rounded-2xl hover:bg-gray-100 text-3xl flex items-center justify-center"
+                onClick={() => navigate(-1)}
+                aria-label="Quay lại"
+              >
+                ❮
+              </button>
               <div className="font-bold text-gray-900 text-xl sm:text-2xl">
                 <span className="inline-block pb-1 border-b-2 border-red-600">
                   Giỏ hàng của bạn

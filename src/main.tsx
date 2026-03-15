@@ -5,13 +5,16 @@ import "./index.css";
 import "leaflet/dist/leaflet.css";
 import App from "./App.tsx";
 import { AuthProvider } from "./features/auth/auth.context";
+import { CartProvider } from "./features/cart/cart.context";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <CartProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </CartProvider>
     </AuthProvider>
   </StrictMode>
 );
