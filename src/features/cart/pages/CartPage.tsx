@@ -319,7 +319,7 @@ export default function CartPage() {
                 type="button"
                 className="bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl font-semibold text-base sm:text-lg transition disabled:opacity-50"
                 disabled={selectedItems.length === 0}
-                onClick={() => navigate("/checkout")}
+                onClick={() => navigate("/checkout?ids=" + selectedItems.map(i => i.id).join(","))}
               >
                 Mua ngay ({selectedItems.length})
               </button>

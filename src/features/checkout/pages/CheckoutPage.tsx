@@ -1,5 +1,5 @@
-import { lazy, Suspense, useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { lazy, Suspense, useEffect, useMemo, useState } from "react"
+import { useNavigate, useLocation } from "react-router-dom"
 import { privateApi } from "../../../shared/api/http"
 
 const MapPickerModal = lazy(
@@ -38,11 +38,21 @@ export default function CheckoutPage() {
     note: "",
   })
 
+  const { search } = useLocation()
+  const selectedIds = useMemo(() => {
+    const query = new URLSearchParams(search)
+    return query.get("ids")?.split(",").map(Number) || []
+  }, [search])
+
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const { data } = await privateApi.get("/cart")
-        setCartItems(data?.items || [])
+        const allItems = data?.items || []
+        const filtered = selectedIds.length > 0
+          ? allItems.filter((item: CartItem) => selectedIds.includes(item.id))
+          : allItems
+        setCartItems(filtered)
       } catch (error) {
         console.error(error)
       } finally {
@@ -50,7 +60,7 @@ export default function CheckoutPage() {
       }
     }
     fetchCart()
-  }, [])
+  }, [selectedIds])
 
   const total = cartItems.reduce(
     (sum, item) => sum + item.priceSnapshot * item.quantity,
