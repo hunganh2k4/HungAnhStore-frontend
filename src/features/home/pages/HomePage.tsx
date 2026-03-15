@@ -4,56 +4,57 @@ import RightPanel from "../components/RightPanel";
 import Suggestions from "../components/Suggestions";
 import PromoBanners from "../components/PromoBanners";
 import VideoReviews from "../components/VideoReviews";
+import CategoryProducts from "../components/CategoryProducts";
 import RecentlyViewed from "../components/RecentlyViewed";
 import TrustBadges from "../components/TrustBadges";
 
 export default function Home() {
   const topProducts = [
-    { 
-      id: 1, 
-      title: "GALAXY S26 ULTRA", 
-      subtitle: "Đặt trước ưu đãi khủng", 
+    {
+      id: 1,
+      title: "GALAXY S26 ULTRA",
+      subtitle: "Đặt trước ưu đãi khủng",
       image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/Home_Ver4(3).png",
     },
-    { 
-      id: 2, 
-      title: "IPHONE 17 PRO MAX", 
-      subtitle: "Trọn Tết, Vẹn Tính Hoa", 
+    {
+      id: 2,
+      title: "IPHONE 17 PRO MAX",
+      subtitle: "Trọn Tết, Vẹn Tính Hoa",
       image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/phone-17-pro-max8-3.png",
     },
 
-    { 
-      id: 3, 
-      title: "XIAOMI 15 PRO", 
-      subtitle: "Hiệu năng đỉnh cao, giá tốt", 
+    {
+      id: 3,
+      title: "XIAOMI 15 PRO",
+      subtitle: "Hiệu năng đỉnh cao, giá tốt",
       image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/Home_Ver4(3).png",
     },
 
-    { 
-      id: 4, 
-      title: "MACBOOK AIR M4", 
-      subtitle: "Siêu mỏng nhẹ, pin cả ngày", 
+    {
+      id: 4,
+      title: "MACBOOK AIR M4",
+      subtitle: "Siêu mỏng nhẹ, pin cả ngày",
       image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/Home_Ver4(3).png",
     },
 
-    { 
-      id: 5, 
-      title: "IPAD PRO 2026", 
-      subtitle: "Sáng tạo không giới hạn", 
+    {
+      id: 5,
+      title: "IPAD PRO 2026",
+      subtitle: "Sáng tạo không giới hạn",
       image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/Home_Ver4(3).png",
     },
 
-    { 
-      id: 6, 
-      title: "AIRPODS PRO 3", 
-      subtitle: "Chống ồn chủ động thế hệ mới", 
+    {
+      id: 6,
+      title: "AIRPODS PRO 3",
+      subtitle: "Chống ồn chủ động thế hệ mới",
       image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/Home_Ver4(3).png",
     },
 
-    { 
-      id: 7, 
-      title: "ASUS ROG STRIX G18", 
-      subtitle: "Laptop gaming hiệu năng khủng", 
+    {
+      id: 7,
+      title: "ASUS ROG STRIX G18",
+      subtitle: "Laptop gaming hiệu năng khủng",
       image: "https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://dashboard.cellphones.com.vn/storage/Home_Ver4(3).png",
     },
   ];
@@ -81,11 +82,14 @@ export default function Home() {
 
         {/* Suggestions Section */}
         <div className="mt-4 pb-8 flex flex-col gap-10">
-           <Suggestions />
-           <PromoBanners />
-           <VideoReviews />
-           <RecentlyViewed />
-           <TrustBadges />
+          <Suggestions />
+          <PromoBanners />
+          <CategoryProducts title="Laptop đời mới" categorySlug="laptop" />
+          <CategoryProducts title="Điện thoại nổi bật" categorySlug="dien-thoai" />
+          <CategoryProducts title="Linh kiện máy tính" categorySlug="linh-kien" />
+          <VideoReviews />
+          <RecentlyViewed />
+          <TrustBadges />
         </div>
 
       </div>
