@@ -648,12 +648,25 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {isAuthenticated && !hasUserReviewed && (
+            {isAuthenticated ? (
+              !hasUserReviewed ? (
+                <button
+                  onClick={() => setShowReviewForm(!showReviewForm)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl font-bold transition shadow-lg hover:shadow-blue-100"
+                >
+                  {showReviewForm ? "Hủy đánh giá" : "Viết đánh giá"}
+                </button>
+              ) : (
+                <div className="bg-green-50 text-green-700 px-6 py-2 rounded-xl font-medium border border-green-100 flex items-center gap-2">
+                  <span className="text-xl">✓</span> Bạn đã đánh giá sản phẩm này
+                </div>
+              )
+            ) : (
               <button
-                onClick={() => setShowReviewForm(!showReviewForm)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl font-bold transition shadow-lg hover:shadow-blue-100"
+                onClick={() => window.location.href = "/login"}
+                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-3 rounded-2xl font-bold transition border border-gray-200"
               >
-                {showReviewForm ? "Hủy đánh giá" : "Viết đánh giá"}
+                Đăng nhập để đánh giá
               </button>
             )}
           </div>

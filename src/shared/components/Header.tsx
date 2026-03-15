@@ -23,9 +23,9 @@ export default function Header() {
         <div className="bg-red-600 text-white py-3">
           <div className="max-w-screen-2xl mx-auto px-2 flex items-center gap-4">
 
-            <div className="text-2xl font-bold">
+            <Link to="/" className="text-2xl font-bold hover:opacity-80 transition">
               HungAnhStore
-            </div>
+            </Link>
 
             {/* Danh mục */}
             <button
