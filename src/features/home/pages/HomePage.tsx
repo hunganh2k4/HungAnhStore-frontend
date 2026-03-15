@@ -2,6 +2,7 @@ import Sidebar from "../components/Sidebar";
 import HeroBanner from "../components/HeroBanner";
 import RightPanel from "../components/RightPanel";
 import Suggestions from "../components/Suggestions";
+import PromoBanners from "../components/PromoBanners";
 import RecentlyViewed from "../components/RecentlyViewed";
 import TrustBadges from "../components/TrustBadges";
 
@@ -78,8 +79,9 @@ export default function Home() {
         </div>
 
         {/* Suggestions Section */}
-        <div className="mt-4 pb-8">
+        <div className="mt-4 pb-8 flex flex-col gap-10">
            <Suggestions />
+           <PromoBanners />
            <RecentlyViewed />
            <TrustBadges />
         </div>
