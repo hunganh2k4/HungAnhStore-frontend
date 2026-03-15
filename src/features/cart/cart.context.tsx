@@ -21,8 +21,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { data } = await privateApi.get('/cart');
       const items = data?.items || [];
-      const total = items.reduce((sum: number, item: any) => sum + item.quantity, 0);
-      setCartCount(total);
+      setCartCount(items.length);
     } catch (error) {
       console.error('Failed to fetch cart count:', error);
     }
