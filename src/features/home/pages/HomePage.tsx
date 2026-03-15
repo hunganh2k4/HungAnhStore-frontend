@@ -2,6 +2,8 @@ import Sidebar from "../components/Sidebar";
 import HeroBanner from "../components/HeroBanner";
 import RightPanel from "../components/RightPanel";
 import Suggestions from "../components/Suggestions";
+import RecentlyViewed from "../components/RecentlyViewed";
+import TrustBadges from "../components/TrustBadges";
 
 export default function Home() {
   const topProducts = [
@@ -78,6 +80,8 @@ export default function Home() {
         {/* Suggestions Section */}
         <div className="mt-4 pb-8">
            <Suggestions />
+           <RecentlyViewed />
+           <TrustBadges />
         </div>
 
       </div>

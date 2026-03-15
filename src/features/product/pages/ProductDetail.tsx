@@ -112,6 +112,34 @@ export default function ProductDetail() {
     }
   }, [allImages])
 
+  /* ================= LƯU SẢN PHẨM ĐÃ XEM ================= */
+  useEffect(() => {
+    if (!product || allImages.length === 0) return
+
+    try {
+      const stored = localStorage.getItem("recentlyViewed")
+      const recentlyViewed = stored ? JSON.parse(stored) : []
+
+      const newItem = {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        image: allImages[0],
+        price: product.products?.[0]?.price || "0"
+      }
+
+      // Loại trùng (theo id) và giới hạn 10 sản phẩm mới nhất
+      const updated = [
+        newItem,
+        ...recentlyViewed.filter((item: any) => item.id !== product.id)
+      ].slice(0, 10)
+
+      localStorage.setItem("recentlyViewed", JSON.stringify(updated))
+    } catch (error) {
+      console.error("Error saving recently viewed product:", error)
+    }
+  }, [product, allImages])
+
   /* ================= LOADING ================= */
 
   if (loading) {
