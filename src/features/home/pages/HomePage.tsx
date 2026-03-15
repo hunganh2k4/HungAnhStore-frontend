@@ -3,6 +3,7 @@ import HeroBanner from "../components/HeroBanner";
 import RightPanel from "../components/RightPanel";
 import Suggestions from "../components/Suggestions";
 import PromoBanners from "../components/PromoBanners";
+import VideoReviews from "../components/VideoReviews";
 import RecentlyViewed from "../components/RecentlyViewed";
 import TrustBadges from "../components/TrustBadges";
 
@@ -82,6 +83,7 @@ export default function Home() {
         <div className="mt-4 pb-8 flex flex-col gap-10">
            <Suggestions />
            <PromoBanners />
+           <VideoReviews />
            <RecentlyViewed />
            <TrustBadges />
         </div>
