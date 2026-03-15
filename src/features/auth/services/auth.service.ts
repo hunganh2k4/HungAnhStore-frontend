@@ -33,7 +33,7 @@ class AuthService {
   }
 
   async logout() {
-    await publicApi.post('/auth/logout');
+    await privateApi.post('/auth/logout');
     tokenStore.clear();
   }
 
