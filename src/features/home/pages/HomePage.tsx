@@ -1,6 +1,7 @@
 import Sidebar from "../components/Sidebar";
 import HeroBanner from "../components/HeroBanner";
 import RightPanel from "../components/RightPanel";
+import Suggestions from "../components/Suggestions";
 
 export default function Home() {
   const topProducts = [
@@ -72,6 +73,11 @@ export default function Home() {
             <RightPanel />
           </div>
 
+        </div>
+
+        {/* Suggestions Section */}
+        <div className="mt-4 pb-8">
+           <Suggestions />
         </div>
 
       </div>
