@@ -41,9 +41,10 @@ interface ProductLine {
   name: string
   slug: string
   description?: string
+  videoReviewUrl?: string
   brand: Brand
   images?: ProductImage[]
-  products?: Variant[],
+  products?: Variant[]
   category: {
     id: number
     name: string
@@ -62,6 +63,20 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState<string>("")
   const [loading, setLoading] = useState(true)
   const { refreshCart } = useCart()
+
+  const getYouTubeEmbedUrl = (url: string) => {
+    try {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/
+      const match = url.match(regExp)
+      const videoId = match && match[2].length === 11 ? match[2] : null
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&controls=1`
+      }
+    } catch (e) {
+      console.error("Invalid YouTube URL:", url)
+    }
+    return ""
+  }
 
   /* ================= FETCH DATA ================= */
 
@@ -232,7 +247,18 @@ export default function ProductDetail() {
           {/* ================= LEFT - GALLERY ================= */}
           <div>
             <div className="bg-white rounded-2xl shadow p-6">
-              {selectedImage ? (
+              {selectedImage === "video" && product.videoReviewUrl ? (
+                <div className="w-full h-[450px] bg-black rounded-xl overflow-hidden">
+                  <iframe
+                    src={getYouTubeEmbedUrl(product.videoReviewUrl)}
+                    className="w-full h-full"
+                    title={product.name}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              ) : selectedImage ? (
                 <img
                   src={selectedImage}
                   alt={product.name}
@@ -247,12 +273,30 @@ export default function ProductDetail() {
 
             {/* Thumbnail */}
             <div className="flex gap-3 mt-4 overflow-x-auto pb-2 custom-scrollbar">
+              {/* Video Thumbnail */}
+              {product.videoReviewUrl && (
+                <button
+                  onClick={() => setSelectedImage("video")}
+                  className={`flex-shrink-0 border rounded-xl p-1 transition flex flex-col items-center justify-center bg-gray-50 min-w-[72px] ${selectedImage === "video"
+                    ? "border-red-600 ring-1 ring-red-600"
+                    : "border-gray-200"
+                    }`}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center">
+                      <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-gray-600 border-b-[5px] border-b-transparent ml-1"></div>
+                    </div>
+                    <span className="text-[12px] font-bold text-black-600">Video</span>
+                  </div>
+                </button>
+              )}
+
               {allImages.map((img, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(img)}
                   className={`flex-shrink-0 border rounded-xl p-1 transition ${selectedImage === img
-                    ? "border-red-600"
+                    ? "border-red-600 ring-1 ring-red-600"
                     : "border-gray-200"
                     }`}
                 >
