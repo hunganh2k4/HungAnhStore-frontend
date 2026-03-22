@@ -51,7 +51,12 @@ class AuthService {
     return data;
   }
 
-  async updateProfile(payload: { name?: string; phone?: string }) {
+  async updateProfile(payload: { 
+    name?: string; 
+    phone?: string;
+    gender?: string;
+    birthday?: string;
+  }) {
     const { data } = await privateApi.patch('/auth/me', payload);
     return data;
   }

@@ -91,6 +91,8 @@ export default function CheckoutPage() {
         paymentMethod,
         items: cartItems.map((item) => ({
           productId: item.productId,
+          productName: item.productNameSnapshot,
+          productImage: item.imageSnapshot,
           quantity: item.quantity,
           price: item.priceSnapshot,
         })),

@@ -1,12 +1,12 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../auth/auth.context";
-import { 
-  User, 
-  ShoppingBag, 
-  StickyNote, 
-  Repeat, 
-  Award, 
-  Briefcase, 
+import {
+  User,
+  ShoppingBag,
+  StickyNote,
+  Repeat,
+  Award,
+  Briefcase,
   LogOut,
   LayoutDashboard
 } from "lucide-react";
@@ -32,10 +32,9 @@ export default function ProfileSidebar() {
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center gap-5 px-6 py-4.5 transition-all border-l-4 ${
-                isActive
-                  ? "bg-red-50 text-red-600 border-red-600 font-bold"
-                  : "text-gray-600 border-transparent hover:bg-gray-50 hover:text-gray-900"
+              `flex items-center gap-5 px-6 py-4.5 transition-all border-l-4 ${isActive
+                ? "bg-red-50 text-red-400 border-red-500"
+                : "text-gray-600 border-transparent hover:bg-gray-50 hover:text-gray-900"
               }`
             }
           >

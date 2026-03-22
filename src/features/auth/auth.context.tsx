@@ -24,7 +24,12 @@ interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  updateUserProfile: (payload: { name?: string; phone?: string }) => Promise<void>;
+  updateUserProfile: (payload: {
+    name?: string;
+    phone?: string,
+    gender?: string;
+    birthday?: string;
+  }) => Promise<void>;
 }
 
 

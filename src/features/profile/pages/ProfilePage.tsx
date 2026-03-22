@@ -3,13 +3,15 @@ import ProfileHeader from "../components/ProfileHeader";
 import ProfileSidebar from "../components/ProfileSidebar";
 import ProfileOverview from "../components/ProfileOverview";
 import PersonalInfo from "../components/PersonalInfo";
-import { 
-  Award, 
-  Ticket, 
-  History, 
-  MapPin, 
-  GraduationCap, 
-  Link2 
+import OrderHistory from "../components/OrderHistory";
+import OrderDetail from "../components/OrderDetail";
+import {
+  Award,
+  Ticket,
+  History,
+  MapPin,
+  GraduationCap,
+  Link2
 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -35,16 +37,14 @@ export default function ProfilePage() {
               key={item.label}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center gap-4 px-8 py-4 rounded-2xl transition-all whitespace-nowrap group ${
-                  isActive
-                    ? "bg-red-50 text-red-600 font-black shadow-sm"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-transparent"
+                `flex items-center gap-4 px-8 py-4 rounded-2xl transition-all whitespace-nowrap group ${isActive
+                  ? "bg-red-50 text-red-600 font-semibold"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-transparent"
                 }`
               }
             >
-              <div className={`p-2 rounded-xl transition-colors ${
-                "bg-gray-50 group-hover:bg-red-100 group-hover:text-red-600 shadow-inner"
-              }`}>
+              <div className={`p-2 rounded-xl transition-colors ${"bg-gray-50 group-hover:bg-red-100 group-hover:text-red-600 shadow-inner"
+                }`}>
                 <item.icon className="w-6 h-6" />
               </div>
               <span className="text-base tracking-tight">{item.label}</span>
@@ -65,6 +65,8 @@ export default function ProfilePage() {
                 <Route index element={<ProfileOverview />} />
                 <Route path="overview" element={<ProfileOverview />} />
                 <Route path="personal-info" element={<PersonalInfo />} />
+                <Route path="order-history" element={<OrderHistory />} />
+                <Route path="order-history/:id" element={<OrderDetail />} />
                 {/* Fallback - Fixed to absolute path to prevent infinite nesting */}
                 <Route path="*" element={<Navigate to="/profile/overview" replace />} />
               </Routes>
