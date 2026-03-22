@@ -15,6 +15,7 @@ interface User {
   phone?: string;
   isPhoneVerified?: boolean;
   gender?: string;
+  birthday?: string;
 }
 
 interface AuthContextType {

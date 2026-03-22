@@ -76,6 +76,44 @@ export default function PersonalInfo() {
   }, []);
 
   // =============================
+  // UPDATE USER
+  // =============================
+  const [openUserDrawer, setOpenUserDrawer] = useState(false);
+
+  const [userForm, setUserForm] = useState({
+    name: "",
+    phone: "",
+    gender: "",
+    birthday: "",
+  });
+
+
+  const handleOpenUserDrawer = () => {
+    setUserForm({
+      name: user?.name || "",
+      phone: user?.phone || "",
+      gender: user?.gender || "",
+      birthday: user?.birthday
+        ? new Date(user.birthday).toISOString().split("T")[0]
+        : "",
+    });
+
+    setOpenUserDrawer(true);
+  };
+
+  const handleUpdateUser = async () => {
+    try {
+      await privateApi.put("/users/me", userForm);
+
+      setOpenUserDrawer(false);
+
+      window.location.reload(); // hoặc refetch user context
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // =============================
   // HANDLE CHANGE PROVINCE
   // =============================
   const handleProvince = (value: string) => {
@@ -243,7 +281,7 @@ export default function PersonalInfo() {
             Thông tin cá nhân
           </h3>
           <button
-            onClick={() => setIsEditing(!isEditing)}
+            onClick={handleOpenUserDrawer}
             className="flex items-center gap-1.5 text-red-600 font-bold text-sm hover:underline"
           >
             <Edit3 className="w-4 h-4" />
@@ -264,7 +302,11 @@ export default function PersonalInfo() {
 
           <div className="flex items-center justify-between border-b border-gray-50 pb-3">
             <span className="text-gray-500 font-medium">Giới tính:</span>
-            <span className="text-gray-900 font-medium">-</span>
+            <span className="text-gray-900 font-medium">
+              {user?.gender
+                ? user.gender === "male" ? "Nam" : "Nữ"
+                : "Chưa cập nhật"}
+            </span>
           </div>
 
           <div className="flex items-center justify-between border-b border-gray-50 pb-3">
@@ -274,7 +316,11 @@ export default function PersonalInfo() {
 
           <div className="flex items-center justify-between border-b border-gray-50 pb-3">
             <span className="text-gray-500 font-medium">Ngày sinh:</span>
-            <span className="text-gray-900 font-medium">04/07/2004</span>
+            <span className="text-gray-900 font-medium">
+              {user?.birthday
+                ? new Date(user.birthday).toLocaleDateString("vi-VN")
+                : "Chưa cập nhật"}
+            </span>
           </div>
 
           <div className="flex items-start justify-between gap-4">
@@ -364,8 +410,85 @@ export default function PersonalInfo() {
           </div>
         </div>
       </div>
+      {/* DRAWER UPDATE THÔNG TIN CÁ NHÂN */}
+      {openUserDrawer && (
+        <div className="fixed inset-0 z-50 flex">
+          <div
+            className="flex-1 bg-black/30"
+            onClick={() => setOpenUserDrawer(false)}
+          />
 
-      {/* DRAWER (CHỈ THÊM INPUT LOGIC, KHÔNG ĐỔI UI) */}
+          <div className="w-[420px] bg-white h-full shadow-xl animate-slide-in-right flex flex-col">
+
+            {/* HEADER */}
+            <div className="flex items-center justify-between px-5 py-4 border-b">
+              <h2 className="text-lg font-semibold">
+                Cập nhật thông tin cá nhân
+              </h2>
+              <button onClick={() => setOpenUserDrawer(false)}>✕</button>
+            </div>
+
+            {/* FORM */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
+
+              {/* NAME */}
+              <input
+                className="w-full border rounded-lg p-3"
+                placeholder="Họ và tên"
+                value={userForm.name}
+                onChange={(e) =>
+                  setUserForm({ ...userForm, name: e.target.value })
+                }
+              />
+
+              {/* PHONE */}
+              <input
+                className="w-full border rounded-lg p-3"
+                placeholder="Số điện thoại"
+                value={userForm.phone}
+                onChange={(e) =>
+                  setUserForm({ ...userForm, phone: e.target.value })
+                }
+              />
+
+              {/* GENDER */}
+              <select
+                className="w-full border rounded-lg p-3"
+                value={userForm.gender}
+                onChange={(e) =>
+                  setUserForm({ ...userForm, gender: e.target.value })
+                }
+              >
+                <option value="">-- Giới tính --</option>
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+              </select>
+
+              {/* BIRTHDAY */}
+              <input
+                type="date"
+                className="w-full border rounded-lg p-3"
+                value={userForm.birthday}
+                onChange={(e) =>
+                  setUserForm({ ...userForm, birthday: e.target.value })
+                }
+              />
+            </div>
+
+            {/* FOOTER */}
+            <div className="p-5 border-t">
+              <button
+                onClick={handleUpdateUser}
+                className="w-full bg-red-600 text-white py-3 rounded-xl font-bold hover:bg-red-700"
+              >
+                Cập nhật
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DRAWER UPDATE ĐỊA CHỈ NHÀ*/}
       {openDrawer && (
         <div className="fixed inset-0 z-50 flex">
           <div
