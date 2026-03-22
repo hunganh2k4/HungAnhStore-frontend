@@ -11,6 +11,7 @@ import CartPage from "../features/cart/pages/CartPage";
 import CheckoutPage from "../features/checkout/pages/CheckoutPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import PaymentResult from "../features/checkout/pages/PaymentResult";
+import ProfilePage from "../features/profile/pages/ProfilePage";
 
 export default function AppRoutes() {
   return (
@@ -35,7 +36,14 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/profile/*"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       {/* Trang full screen */}

@@ -12,6 +12,9 @@ interface User {
   name: string;
   email: string;
   avatar?: string;
+  phone?: string;
+  isPhoneVerified?: boolean;
+  gender?: string;
 }
 
 interface AuthContextType {
@@ -20,6 +23,7 @@ interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUserProfile: (payload: { name?: string; phone?: string }) => Promise<void>;
 }
 
 
@@ -79,6 +83,11 @@ export const AuthProvider = ({
     }
   };
 
+  const updateUserProfile = async (payload: { name?: string; phone?: string }) => {
+    const updatedUser = await authService.updateProfile(payload);
+    setUser(updatedUser);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -87,6 +96,7 @@ export const AuthProvider = ({
         isLoading,
         login,
         logout,
+        updateUserProfile,
       }}
     >
       {children}

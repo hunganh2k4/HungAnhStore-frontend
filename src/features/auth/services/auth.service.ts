@@ -51,6 +51,11 @@ class AuthService {
     return data;
   }
 
+  async updateProfile(payload: { name?: string; phone?: string }) {
+    const { data } = await privateApi.patch('/auth/me', payload);
+    return data;
+  }
+
   isAuthenticated() {
     return !!tokenStore.get();
   }

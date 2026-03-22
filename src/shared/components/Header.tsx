@@ -67,20 +67,35 @@ export default function Header() {
               </Link>
 
               {isAuthenticated && user ? (
-                // Hiển thị tên user + nút logout
-                <div className="flex items-center gap-2 bg-white/15 px-4 py-2 rounded-xl">
-                  👤 {user.name}
+                // Hiển thị tên user + link tới profile
+                <div className="flex items-center gap-3">
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-2 bg-white/15 px-4 py-2 rounded-xl hover:bg-white/25 transition"
+                  >
+                    <span className="text-lg">👤</span>
+                    <span className="font-medium whitespace-nowrap">
+                      {user.name}
+                    </span>
+                  </Link>
                   <button
                     onClick={logout}
-                    className="ml-2 px-2 py-1 bg-red-600 text-white rounded-xl text-sm hover:bg-red-700 transition"
+                    className="p-2 bg-white/10 text-white rounded-xl hover:bg-white/20 transition group"
+                    title="Đăng xuất"
                   >
-                    Đăng xuất
+                    <span className="text-xl group-hover:scale-110 block transition">
+                      Logout
+                    </span>
                   </button>
                 </div>
               ) : (
                 // Nếu chưa login
-                <button onClick={() => navigate("/login")} className="bg-white/15 px-4 py-2 rounded-xl hover:bg-white/25 transition">
-                  👤 Đăng nhập
+                <button
+                  onClick={() => navigate("/login")}
+                  className="bg-white/15 px-4 py-2 rounded-xl hover:bg-white/25 transition flex items-center gap-2"
+                >
+                  <span className="text-lg">👤</span>
+                  <span>Đăng nhập</span>
                 </button>
               )}
             </div>
