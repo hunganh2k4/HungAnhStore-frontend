@@ -8,7 +8,7 @@ import { useCart } from "../../features/cart/cart.context";
 
 export default function Header() {
   const [openMenu, setOpenMenu] = useState(false);
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { cartCount } = useCart();
   const navigate = useNavigate();
 
@@ -78,15 +78,6 @@ export default function Header() {
                       {user.name}
                     </span>
                   </Link>
-                  <button
-                    onClick={logout}
-                    className="p-2 bg-white/10 text-white rounded-xl hover:bg-white/20 transition group"
-                    title="Đăng xuất"
-                  >
-                    <span className="text-xl group-hover:scale-110 block transition">
-                      Logout
-                    </span>
-                  </button>
                 </div>
               ) : (
                 // Nếu chưa login

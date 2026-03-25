@@ -1,13 +1,22 @@
+import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { useCart } from "../../cart/cart.context";
 
 export default function PaymentResult() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const { refreshCart } = useCart();
 
     const orderId = searchParams.get("orderId");
     const success = searchParams.get("success");
 
     const isSuccess = success === "true";
+
+    useEffect(() => {
+        if (isSuccess) {
+            refreshCart();
+        }
+    }, [isSuccess, refreshCart]);
 
     return (
         <div className="min-h-[calc(100vh-64px)] bg-gray-50 flex items-center justify-center p-4">

@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { privateApi } from "../../../shared/api/http"
+import { useCart } from "../../cart/cart.context" 
 
 const MapPickerModal = lazy(
   () => import("../components/MapPickerModal")
@@ -26,6 +27,7 @@ interface CheckoutForm {
 
 export default function CheckoutPage() {
   const navigate = useNavigate()
+  const { refreshCart } = useCart()
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
@@ -117,6 +119,7 @@ export default function CheckoutPage() {
         }
       } else {
         alert("Đặt hàng thành công!")
+        await refreshCart()
         navigate("/")
       }
     } catch (error) {

@@ -148,8 +148,33 @@ export default function CartPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="p-10 text-center text-gray-500">
-        Giỏ hàng trống
+      <div className="min-h-[calc(100vh-64px)] bg-gray-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-center space-y-6 transform transition-all hover:shadow-md">
+          <div className="relative mx-auto w-32 h-32 bg-red-50 rounded-full flex items-center justify-center animate-pulse-slow">
+            <span className="text-6xl select-none">🛒</span>
+            <div className="absolute -top-1 -right-1 w-8 h-8 bg-white rounded-full shadow-sm flex items-center justify-center">
+              <span className="text-xl">✨</span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Giỏ hàng đang trống!
+            </h2>
+            <p className="text-gray-500 leading-relaxed">
+              Bạn chưa có sản phẩm nào trong giỏ hàng. <br />
+              Hãy khám phá hàng ngàn sản phẩm hấp dẫn ngay nhé!
+            </p>
+          </div>
+
+          <button
+            onClick={() => navigate("/")}
+            className="w-full inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-2xl font-bold text-lg transition-all active:scale-[0.98] shadow-lg shadow-red-200"
+          >
+            Tiếp tục mua sắm
+            <span className="text-xl">→</span>
+          </button>
+        </div>
       </div>
     )
   }
